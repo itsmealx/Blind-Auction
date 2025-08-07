@@ -1,7 +1,9 @@
 import random
 import os
 import time
+from pprint import pprint
 from art import logo
+from datetime import  datetime
 
 
 auction_items = {
@@ -9,7 +11,7 @@ auction_items = {
     "Iphone 17 Pro Max": 600,
     "Art Painting": 1200,
     "Bluetooth Speaker": 500,
-    "Rolex": 1500,
+    "Watch": 800,
     "Gaming PC Set": 500
 }
 
@@ -76,13 +78,32 @@ def find_highest_bid(bids) -> tuple:
     return max(bids, key=bids.get), bids[max(bids, key=bids.get)]
 
 
+def generate_report(winner: tuple, item: tuple) -> dict:
+    """Generate Auction report."""
+    auction_date = datetime.today()
+    auction_report = {
+        f"Auction Report [{auction_date.strftime("%m-%d-%y - %H:%M:%S")}]":{
+            "item_name": item[0],
+            "base_price": f"₱{item[1]:,.2f}",
+            "winner": winner[0],
+            "winning_bid": f"₱{winner[1]:,.2f}"
+        }
+    }
+
+    return auction_report
+
+
+report = {}
 while auction_items:
     bid_item = select_random_items(auction_items)
     bid = get_bids(bid_item)
     highest_bidder = find_highest_bid(bid)
 
+    report.update(generate_report(highest_bidder, bid_item))
+
     print(f"The winner is {highest_bidder[0]} with a bid amount of ₱{highest_bidder[1]:,.2f}")
     time.sleep(3) #to display the winner first before clearing the screen
     clrscr()
     if auction_items == {}: #if there are no more items, exit the loop
+        pprint(report)
         break
